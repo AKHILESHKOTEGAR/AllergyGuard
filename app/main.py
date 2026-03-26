@@ -6,9 +6,19 @@ from app.utils.ai_handler import get_structured_profile
 from pydantic import BaseModel
 from fastapi import UploadFile, File
 from app.utils.scanner import scan_and_analyze
+from fastapi.middleware.cors import CORSMiddleware
 
 # This is the line the error is looking for!
 app = FastAPI(title="AllergyGuard API")
+
+# Add the CORS middleware right after defining 'app'
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
@@ -63,3 +73,4 @@ async def upload_label(profile_id: int, file: UploadFile = File(...), db: Sessio
     except Exception as e:
         print(f"Scanner Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+    
